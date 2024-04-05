@@ -100,7 +100,7 @@ class ActualizarDolarMEPAPI(APIView):
                 if valor_dolar_mep.startswith('$'):
                     # Elimina el símbolo de dólar
                     valor_dolar_mep = valor_dolar_mep.replace('$', '').strip()
-                    valor_dolar_mep  = valor_dolar_mep.replace(",", "", 1)
+                    valor_dolar_mep  = valor_dolar_mep.replace(".", "", 1)
                     valor_dolar_mep  = valor_dolar_mep.replace(",", ".", 1)
                     print(valor_dolar_mep)
                     try:

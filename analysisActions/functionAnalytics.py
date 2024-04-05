@@ -1,7 +1,5 @@
-import pandas as pd
-import pandas_datareader as pdr
+
 import datetime as dt
-import numpy as np
 import yfinance as yf
 def calcular_wavetrend(precios):
     n1 = 10  # Channel Length

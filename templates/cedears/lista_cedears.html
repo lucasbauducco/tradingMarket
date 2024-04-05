@@ -22,9 +22,6 @@
             <th>Precio Mínimo</th>
             <th>Último Precio</th>
             <th>Variación Diaria</th>
-            <th>Hora Cotización</th>
-            <th>Precio Compra</th>
-            <th>Precio Venta</th>
             <th>Ratio</th>
             <th>Agregar</th>
         </tr>
@@ -37,9 +34,6 @@
             <td>{{ cedear.precio_minimo }}</td>
             <td>{{ cedear.ultimo_precio }}</td>
             <td>{{ cedear.variacion_diaria }}</td>
-            <td>{{ cedear.hora_cotizacion }}</td>
-            <td>{{ cedear.precio_compra }}</td>
-            <td>{{ cedear.precio_venta }}</td>
             <td class="ratio" data-symbol="{{ cedear.simbolo }}">
                 {{ cedear.ratio }}
                 <form onsubmit="actualizarRatio(event, '{{ cedear.simbolo }}')">

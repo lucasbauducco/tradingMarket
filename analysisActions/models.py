@@ -28,6 +28,32 @@ class CEDEAR(models.Model):
     tendencia = models.IntegerField(default=None, null=True)
     vencimiento = models.CharField(max_length=50, blank=True, default='')
     ratio = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    beneficio_diferencia_accion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    accion_x_ratio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    def get_queryset(self):
+        # Filtrar los CEDEARs cuyos símbolos terminan en "D"
+        queryset = super().get_queryset()
+        queryset = queryset.filter(simbolo__endswith='D')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cedears = self.get_queryset()
+        for cedear in cedears:
+            accion = Accion.objects.filter(simbolo=cedear.simbolo).first()
+            if accion:
+                cedear.ultimo_precio_accion = accion.ultimo_precio
+                cedear.diferencia_accion_x_ratio_ultimo_precio = cedear.accion_x_ratio - accion.ultimo_precio
+        context['cedears'] = cedears
+        return context
+    def actualizar_datos(self):
+        if self.ratio == 0:
+            self.accion_x_ratio = -9999
+        elif self.ratio > 0:
+            self.accion_x_ratio = self.ultimo_precio * self.ratio
+        else:
+            self.accion_x_ratio = self.ultimo_precio / abs(self.ratio)
+        self.save()
     class Meta:
         ordering = ['especie']
         
@@ -44,7 +70,6 @@ class Accion(models.Model):
     volumen = models.BigIntegerField(null=True, blank=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     recomendacion = models.CharField(max_length=16, null=True)
-
     def __str__(self):
         return f"{self.simbolo} - {self.nombre}"
 class Operacion(models.Model):

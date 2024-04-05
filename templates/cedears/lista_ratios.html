@@ -29,8 +29,8 @@
             <td>{{ cedear.simbolo }}</td>
             <td>{{ cedear.precio_venta_peso }}</td>
             <td>{{ cedear.precio_venta_dolar }}</td>
-            <td>{{ cedear.ratio }}</td>
-            <td>{{ cedear.mep }}</td>
+            <td>{{ cedear.ratio|floatformat:2 }}</td>
+            <td>{{ cedear.mep|floatformat:2 }}</td>
             <td style="text-align: center;">{{ cedear.beneficio_cotizacion|floatformat:2 }}</td>
 
         </tr>

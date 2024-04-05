@@ -7,6 +7,32 @@ from .models import CEDEAR, Accion, Operacion
 from django.core.paginator import Paginator
 from .api import CalcularRatioPreciosAPI
 from django.db.models import Q
+class CedearAccionListView(ListView):
+    model = CEDEAR
+    template_name = 'cedears/cedear_accion_list.html'  # Asegúrate de reemplazar este nombre si es necesario
+    context_object_name = 'cedears'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(simbolo__endswith='D')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cedears = self.get_queryset()
+        cedears_con_precio_valido = []
+        for cedear in cedears:
+            accion = Accion.objects.filter(simbolo_cedears=cedear.simbolo).first()
+            if accion and accion.ultimo_precio != 0 and cedear.ultimo_precio != 0:
+                cedear.ultimo_precio_accion = accion.ultimo_precio
+                if cedear.ratio == 0:
+                    cedear.diferencia_porcentaje = -100  # Valor negativo arbitrario
+                elif cedear.ratio > 0:
+                    cedear.diferencia_porcentaje = (((cedear.ultimo_precio * cedear.ratio)  - accion.ultimo_precio) / accion.ultimo_precio) * 100
+                else:
+                    cedear.diferencia_porcentaje = (((cedear.ultimo_precio / -cedear.ratio) - accion.ultimo_precio) / accion.ultimo_precio) * 100
+                cedears_con_precio_valido.append(cedear)
+        context['cedears'] = cedears_con_precio_valido
+        return context
 class Operacion(ListView):
     model = Operacion
     template_name = 'operacion/lista_operacion.html'  # Asegúrate de reemplazar este nombre si es necesario
@@ -17,10 +43,14 @@ class Operacion(ListView):
         return context
 class ListaCedearView(ListView):
     model = CEDEAR
-    template_name = 'cedears/lista_cedears.html'  # Asegúrate de reemplazar este nombre si es necesario
+    template_name = 'cedears/lista_cedears.html'
     context_object_name = 'cedears'
 
     def get_context_data(self, **kwargs):
+        # Actualizar los datos de todos los CEDEARs antes de mostrar la vista
+        cedears = CEDEAR.objects.all()
+
+        # Llamar al método get_context_data de la clase base para obtener el contexto
         context = super().get_context_data(**kwargs)
         return context
 class ListaAccionView(ListView):
